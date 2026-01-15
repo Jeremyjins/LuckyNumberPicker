@@ -31,7 +31,7 @@ export function StatusBar({
         className
       )}
     >
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-md">
         <span className="text-muted-foreground">남은 번호:</span>
         <span
           className={cn(
