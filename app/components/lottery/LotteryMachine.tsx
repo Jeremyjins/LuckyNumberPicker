@@ -98,7 +98,7 @@ export function LotteryMachine() {
   const showFooter = isReady || isResult;
 
   return (
-    <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
+    <div className="h-dvh flex flex-col bg-background relative overflow-hidden pb-16">
       {/* 테마 선택 버튼 - 우상단 고정 */}
       <div className="absolute top-4 right-4 z-50 pt-safe">
         <ThemeSelector />
