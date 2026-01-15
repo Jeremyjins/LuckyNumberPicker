@@ -21,6 +21,13 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap",
   },
+  // Apple Touch Icons for iOS home screen
+  { rel: "apple-touch-icon", sizes: "180x180", href: "/images/app_logo.png" },
+  { rel: "apple-touch-icon", sizes: "152x152", href: "/images/app_logo.png" },
+  { rel: "apple-touch-icon", sizes: "120x120", href: "/images/app_logo.png" },
+  { rel: "apple-touch-icon", href: "/images/app_logo.png" },
+  // Web App Manifest for PWA
+  { rel: "manifest", href: "/manifest.json" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -29,6 +36,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* PWA meta tags */}
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="행운번호 추첨기" />
         <Meta />
         <Links />
       </head>
