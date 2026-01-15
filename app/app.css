@@ -144,6 +144,14 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Dynamic Viewport Height (iOS Safari compatible) */
+.h-dvh {
+  height: 100dvh;
+}
+.max-h-dvh {
+  max-height: 100dvh;
+}
+
 /* Custom Animations for Lottery */
 @keyframes number-roll {
   0% {

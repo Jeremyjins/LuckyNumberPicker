@@ -98,9 +98,9 @@ export function LotteryMachine() {
   const showFooter = isReady || isResult;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative">
+    <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
       {/* 테마 선택 버튼 - 우상단 고정 */}
-      <div className="absolute top-6 right-4 z-50">
+      <div className="absolute top-4 right-4 z-50 pt-safe">
         <ThemeSelector />
       </div>
 
@@ -115,7 +115,7 @@ export function LotteryMachine() {
 
       {/* 상단 상태바 */}
       {showStatusBar && (
-        <header className="pt-safe px-4 pt-4">
+        <header className="pt-safe px-4 pt-4 shrink-0">
           <StatusBar
             remainingCount={remainingCount}
             totalCount={totalRange}
@@ -125,10 +125,10 @@ export function LotteryMachine() {
       )}
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-4 min-h-0">
         {/* 초기 상태: Hero Section + 세팅하기 버튼 */}
         {isInitial && (
-          <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-6">
             {/* Hero Title */}
             <div className="text-center animate-stagger animate-fade-in-up">
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
@@ -196,7 +196,7 @@ export function LotteryMachine() {
 
       {/* 히스토리 영역 */}
       {showHistory && (
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-2 shrink-0">
           <HistoryList
             history={history}
             allowRestore={!settings.allowDuplicates}
@@ -206,36 +206,33 @@ export function LotteryMachine() {
       )}
 
       {/* 하단 푸터 */}
-      {showFooter && (
-        <footer className="pb-safe px-4 pb-6">
+      <footer className="pb-safe px-4 pb-4 flex flex-col items-center gap-3 shrink-0">
+        {showFooter && (
           <Button
             onClick={resetAll}
             variant="ghost"
             size="sm"
-            className={cn(
-              'w-full',
-              'text-muted-foreground hover:text-foreground mb-4'
-            )}
+            className="text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             다시 설정하기
           </Button>
-        </footer>
-      )}
-      {/* 브랜드 로고 (모든 상태에서 표시) */}
-      <footer className="pb-safe pb-8 flex flex-col justify-center items-center gap-2 mb-8">
-        <p className="text-muted-foreground tracking-tighter font-semibold text-xs">SPONSORED BY</p>
-        <img
-          src="/images/eb_icon.png"
-          alt="EB"
-          className={cn(
-            'w-10 h-10',
-            'opacity-40 hover:opacity-60',
-            'transition-opacity duration-300',
-            'dark:opacity-30 dark:hover:opacity-50',
-            isInitial && 'animate-stagger animate-fade-in delay-500'
-          )}
-        />
+        )}
+        {/* 브랜드 로고 */}
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-muted-foreground tracking-tighter font-semibold text-[10px]">SPONSORED BY</p>
+          <img
+            src="/images/eb_icon.png"
+            alt="EB"
+            className={cn(
+              'w-8 h-8',
+              'opacity-40 hover:opacity-60',
+              'transition-opacity duration-300',
+              'dark:opacity-30 dark:hover:opacity-50',
+              isInitial && 'animate-stagger animate-fade-in delay-500'
+            )}
+          />
+        </div>
       </footer>
     </div>
   );
