@@ -1,17 +1,14 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { LotteryMachine } from "~/components/lottery/LotteryMachine";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "행운번호 추첨기" },
+    { name: "description", content: "간편하게 행운의 번호를 추첨하세요!" },
+    { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
   ];
 }
 
-export function loader({ context }: Route.LoaderArgs) {
-  return { message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE };
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-  return <Welcome message={loaderData.message} />;
+export default function Home() {
+  return <LotteryMachine />;
 }
