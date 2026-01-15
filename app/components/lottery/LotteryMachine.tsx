@@ -222,7 +222,6 @@ export function LotteryMachine() {
           </Button>
         </footer>
       )}
-e
       {/* 브랜드 로고 (모든 상태에서 표시) */}
       <footer className="pb-safe pb-6 flex flex-col justify-center items-center gap-2 mb-4">
         <p className="text-muted-foreground tracking-tighter font-semibold text-xs">SPONSORED BY</p>
