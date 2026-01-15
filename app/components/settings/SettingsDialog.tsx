@@ -121,6 +121,24 @@ export function SettingsDialog({
             />
           </div>
 
+          {/* 사운드 옵션 */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <label className="text-sm font-medium">효과음</label>
+              <p className="text-xs text-muted-foreground">
+                {settings.soundEnabled
+                  ? '추첨 시 효과음이 재생됩니다'
+                  : '효과음이 꺼져 있습니다'}
+              </p>
+            </div>
+            <Switch
+              checked={settings.soundEnabled}
+              onCheckedChange={(checked) =>
+                onSettingsChange({ soundEnabled: checked })
+              }
+            />
+          </div>
+
           {/* 유효성 검사 에러 메시지 */}
           {!validation.valid && (
             <p className="text-sm text-destructive">{validation.error}</p>

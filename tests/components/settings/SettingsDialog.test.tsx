@@ -9,6 +9,7 @@ describe('SettingsDialog', () => {
     endNumber: 45,
     drawCount: 6,
     allowDuplicates: false,
+    soundEnabled: true,
   };
 
   const defaultProps = {
@@ -187,8 +188,9 @@ describe('SettingsDialog', () => {
       const onSettingsChange = vi.fn();
       render(<SettingsDialog {...defaultProps} onSettingsChange={onSettingsChange} />);
 
-      const toggle = screen.getByRole('switch');
-      fireEvent.click(toggle);
+      // 중복 허용 스위치 선택 (첫 번째 스위치)
+      const toggles = screen.getAllByRole('switch');
+      fireEvent.click(toggles[0]);
 
       expect(onSettingsChange).toHaveBeenCalledWith({ allowDuplicates: true });
     });

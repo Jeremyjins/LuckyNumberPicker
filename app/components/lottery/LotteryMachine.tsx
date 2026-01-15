@@ -10,6 +10,7 @@ import { HistoryList } from './HistoryList';
 import { Button } from '~/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { cn } from '~/lib/utils';
+import { playTick, playSuccess } from '~/lib/sound';
 
 /**
  * 행운번호 추첨기 메인 컨테이너
@@ -37,12 +38,26 @@ export function LotteryMachine() {
     resetAll,
   } = useLotteryMachine();
 
+  // 틱 핸들러 (숫자 변경 + 사운드)
+  const handleTick = useCallback(
+    (num: number, progress: number) => {
+      updateDisplay(num);
+      if (settings.soundEnabled) {
+        playTick(progress);
+      }
+    },
+    [updateDisplay, settings.soundEnabled]
+  );
+
   // 애니메이션 완료 핸들러
   const handleAnimationComplete = useCallback(
     (numbers: number[]) => {
+      if (settings.soundEnabled) {
+        playSuccess();
+      }
       finishDraw(numbers);
     },
-    [finishDraw]
+    [finishDraw, settings.soundEnabled]
   );
 
   // 애니메이션 훅
@@ -56,7 +71,7 @@ export function LotteryMachine() {
     excludedNumbers,
     drawCount: settings.drawCount,
     allowDuplicates: settings.allowDuplicates,
-    onTick: updateDisplay,
+    onTick: handleTick,
     onComplete: handleAnimationComplete,
   });
 
@@ -207,9 +222,10 @@ export function LotteryMachine() {
           </Button>
         </footer>
       )}
-
+e
       {/* 브랜드 로고 (모든 상태에서 표시) */}
-      <footer className="pb-safe pb-6 flex flex-col items-center gap-2 mb-4">
+      <footer className="pb-safe pb-6 flex flex-col justify-center items-center gap-2 mb-4">
+        <p className="text-muted-foreground tracking-tighter font-semibold text-xs">SPONSORED BY</p>
         <img
           src="/images/eb_icon.png"
           alt="EB"

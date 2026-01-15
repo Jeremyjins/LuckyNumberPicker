@@ -20,7 +20,7 @@ export interface UseDrawAnimationOptions {
   /** 애니메이션 시간 (ms) */
   duration?: number;
   /** 틱마다 호출되는 콜백 */
-  onTick?: (currentNumber: number) => void;
+  onTick?: (currentNumber: number, progress: number) => void;
   /** 완료 시 호출되는 콜백 */
   onComplete?: (finalNumbers: number[]) => void;
 }
@@ -88,9 +88,10 @@ export function useDrawAnimation(
     const schedule = generateAnimationSchedule(duration);
 
     // 애니메이션 실행
+    const totalTicks = schedule.timestamps.length;
     cancelRef.current = runAnimation(
       schedule,
-      () => {
+      (tickIndex: number) => {
         // 각 틱마다 랜덤 숫자 표시
         const randomNum = getRandomNumber(
           optionsRef.current.startNumber,
@@ -98,9 +99,12 @@ export function useDrawAnimation(
           [] // 애니메이션 중에는 제외 없이 모든 숫자 표시
         );
 
+        // progress 계산 (0 ~ 1)
+        const progress = totalTicks > 1 ? tickIndex / (totalTicks - 1) : 1;
+
         if (randomNum !== null) {
           setCurrentDisplay(randomNum);
-          optionsRef.current.onTick?.(randomNum);
+          optionsRef.current.onTick?.(randomNum, progress);
         }
       },
       () => {

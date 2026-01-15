@@ -15,6 +15,8 @@ export interface Settings {
   drawCount: number;
   /** 중복 허용 여부 (default: false) */
   allowDuplicates: boolean;
+  /** 사운드 활성화 여부 (default: true) */
+  soundEnabled: boolean;
 }
 
 /** 전체 상태 인터페이스 */
@@ -56,6 +58,7 @@ export const DEFAULT_SETTINGS: Settings = {
   endNumber: 12,
   drawCount: 1,
   allowDuplicates: false,
+  soundEnabled: true,
 };
 
 /** 초기 상태 */
