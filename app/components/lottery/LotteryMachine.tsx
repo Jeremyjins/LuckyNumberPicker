@@ -85,7 +85,7 @@ export function LotteryMachine() {
   return (
     <div className="min-h-screen flex flex-col bg-background relative">
       {/* 테마 선택 버튼 - 우상단 고정 */}
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute top-6 right-4 z-50">
         <ThemeSelector />
       </div>
 
