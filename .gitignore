@@ -19,3 +19,9 @@ worker-configuration.d.ts
 
 # Test coverage
 /coverage/
+
+# Claude sessions
+.claude/sessions/
+
+# Playwright MCP screenshots
+.playwright-mcp/
