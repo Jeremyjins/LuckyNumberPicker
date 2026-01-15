@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useLotteryMachine } from '~/hooks/useLotteryMachine';
 import { useDrawAnimation } from '~/hooks/useDrawAnimation';
 import { SettingsDialog } from '~/components/settings/SettingsDialog';
+import { ThemeSelector } from '~/components/ui/theme-selector';
 import { StatusBar } from './StatusBar';
 import { DrawButton } from './DrawButton';
 import { ResultDisplay } from './ResultDisplay';
@@ -82,7 +83,12 @@ export function LotteryMachine() {
   const showFooter = isReady || isResult;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background relative">
+      {/* 테마 선택 버튼 - 우상단 고정 */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeSelector />
+      </div>
+
       {/* 설정 다이얼로그 */}
       <SettingsDialog
         open={settingsOpen}
@@ -105,13 +111,31 @@ export function LotteryMachine() {
 
       {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
-        {/* 초기 상태: 세팅하기 버튼 */}
+        {/* 초기 상태: Hero Section + 세팅하기 버튼 */}
         {isInitial && (
-          <DrawButton
-            variant="setup"
-            size="lg"
-            onClick={handleSetupClick}
-          />
+          <div className="flex flex-col items-center gap-8">
+            {/* Hero Title */}
+            <div className="text-center animate-stagger animate-fade-in-up">
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+                행운번호
+              </h1>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+                추첨기
+              </h1>
+              <p className="mt-4 text-base text-muted-foreground animate-stagger animate-fade-in-up delay-200">
+                나만의 행운을 만들어보세요
+              </p>
+            </div>
+
+            {/* Setup Button */}
+            <div className="animate-stagger animate-fade-in-up delay-300">
+              <DrawButton
+                variant="setup"
+                size="lg"
+                onClick={handleSetupClick}
+              />
+            </div>
+          </div>
         )}
 
         {/* 결과 표시 */}
@@ -183,6 +207,21 @@ export function LotteryMachine() {
           </Button>
         </footer>
       )}
+
+      {/* 브랜드 로고 (모든 상태에서 표시) */}
+      <footer className="pb-safe pb-6 flex flex-col items-center gap-2 mb-4">
+        <img
+          src="/images/eb_icon.png"
+          alt="EB"
+          className={cn(
+            'w-10 h-10',
+            'opacity-40 hover:opacity-60',
+            'transition-opacity duration-300',
+            'dark:opacity-30 dark:hover:opacity-50',
+            isInitial && 'animate-stagger animate-fade-in delay-500'
+          )}
+        />
+      </footer>
     </div>
   );
 }

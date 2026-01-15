@@ -24,6 +24,11 @@ const sizeClasses = {
   lg: 'w-40 h-40 text-2xl',
 };
 
+const shadowClasses = {
+  setup: 'shadow-lg shadow-secondary/30 hover:shadow-xl hover:shadow-secondary/40',
+  draw: 'shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40',
+};
+
 const displaySizeClasses = {
   sm: 'text-3xl',
   md: 'text-5xl',
@@ -65,25 +70,32 @@ export function DrawButton({
           // Base styles
           'relative rounded-full',
           'flex flex-col items-center justify-center gap-2',
-          'font-bold transition-all duration-200',
+          'font-bold transition-all duration-300',
           'outline-none focus-visible:ring-4 focus-visible:ring-ring/50',
 
           // Size
           sizeClasses[size],
+
+          // Shadow
+          shadowClasses[variant],
+          'shadow-smooth',
 
           // Variant styles
           isSetup
             ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
             : 'bg-primary text-primary-foreground hover:bg-primary/90',
 
+          // Hover lift effect
+          !disabled && !isAnimating && 'hover:-translate-y-1',
+
           // Disabled state
-          disabled && 'opacity-50 cursor-not-allowed',
+          disabled && 'opacity-50 cursor-not-allowed shadow-none',
 
           // Animation state (cursor only, no pulse on button itself)
           isAnimating && 'cursor-wait',
 
           // Active/pressed state
-          !disabled && !isAnimating && 'active:scale-95',
+          !disabled && !isAnimating && 'active:scale-95 active:translate-y-0',
 
           className
         )}
