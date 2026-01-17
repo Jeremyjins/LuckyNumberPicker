@@ -98,9 +98,17 @@ export function LotteryMachine() {
   const showFooter = isReady || isResult;
 
   return (
-    <div className="h-dvh flex flex-col bg-background relative overflow-hidden pb-16">
+    <div
+      className={cn(
+        'flex flex-col bg-background relative',
+        // 초기 상태: 고정 뷰포트 높이, 스크롤 없음
+        isInitial && 'h-dvh overflow-hidden',
+        // 결과 상태: 최소 뷰포트 높이, 스크롤 허용
+        !isInitial && 'min-h-dvh'
+      )}
+    >
       {/* 테마 선택 버튼 - 우상단 고정 */}
-      <div className="absolute top-4 right-4 z-50 pt-safe">
+      <div className="fixed top-4 right-4 z-50 pt-safe">
         <ThemeSelector />
       </div>
 
@@ -113,9 +121,15 @@ export function LotteryMachine() {
         onConfirm={confirmSettings}
       />
 
-      {/* 상단 상태바 */}
+      {/* 상단 상태바 - 결과 화면에서 sticky */}
       {showStatusBar && (
-        <header className="pt-safe px-4 pt-4 shrink-0">
+        <header
+          className={cn(
+            'pt-safe px-4 pt-4 shrink-0 bg-background z-40',
+            // 결과 화면에서 스크롤 시 상단 고정
+            isResult && 'sticky top-0'
+          )}
+        >
           <StatusBar
             remainingCount={remainingCount}
             totalCount={totalRange}
@@ -125,7 +139,15 @@ export function LotteryMachine() {
       )}
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 gap-4 min-h-0">
+      <main
+        className={cn(
+          'flex flex-col items-center px-4 py-4 gap-4',
+          // 초기 상태: flex-1로 중앙 정렬
+          isInitial && 'flex-1 justify-center',
+          // ready/drawing 상태: 중앙 정렬
+          (isReady || isDrawing) && 'flex-1 justify-center'
+        )}
+      >
         {/* 초기 상태: Hero Section + 세팅하기 버튼 */}
         {isInitial && (
           <div className="flex flex-col items-center gap-6">
@@ -196,7 +218,7 @@ export function LotteryMachine() {
 
       {/* 히스토리 영역 */}
       {showHistory && (
-        <div className="px-4 pb-2 shrink-0">
+        <div className="px-4 py-4 shrink-0">
           <HistoryList
             history={history}
             allowRestore={!settings.allowDuplicates}
@@ -206,7 +228,7 @@ export function LotteryMachine() {
       )}
 
       {/* 하단 푸터 */}
-      <footer className="pb-safe px-4 pb-4 flex flex-col items-center gap-3 shrink-0">
+      <footer className="pb-safe px-4 pb-4 flex flex-col items-center gap-3 shrink-0 mt-auto">
         {showFooter && (
           <Button
             onClick={resetAll}

@@ -10,6 +10,39 @@ interface ResultDisplayProps {
 }
 
 /**
+ * 숫자 개수에 따른 크기 결정
+ * - 1~3개: 큰 크기 (기본)
+ * - 4~9개: 중간 크기
+ * - 10개 이상: 작은 크기
+ */
+function getResultSize(count: number): {
+  container: string;
+  text: string;
+  gap: string;
+} {
+  if (count <= 3) {
+    return {
+      container: 'min-w-32 h-32 px-4 rounded-2xl sm:min-w-40 sm:h-40 sm:px-6',
+      text: 'text-5xl sm:text-7xl',
+      gap: 'gap-4',
+    };
+  }
+  if (count <= 9) {
+    return {
+      container: 'min-w-20 h-20 px-3 rounded-xl sm:min-w-24 sm:h-24 sm:px-4',
+      text: 'text-3xl sm:text-4xl',
+      gap: 'gap-3',
+    };
+  }
+  // 10개 이상
+  return {
+    container: 'min-w-14 h-14 px-2 rounded-lg sm:min-w-16 sm:h-16 sm:px-3',
+    text: 'text-xl sm:text-2xl',
+    gap: 'gap-2',
+  };
+}
+
+/**
  * 추첨 결과 표시 컴포넌트
  */
 export function ResultDisplay({
@@ -21,28 +54,37 @@ export function ResultDisplay({
     return null;
   }
 
+  const size = getResultSize(numbers.length);
+
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-4',
+        'flex flex-col items-center justify-center gap-4 w-full',
         'animate-result-pop',
         className
       )}
     >
       {/* 메인 결과 */}
-      <div className="flex items-center justify-center gap-4 flex-wrap">
+      <div
+        className={cn(
+          'flex items-center justify-center flex-wrap',
+          'max-w-full',
+          size.gap
+        )}
+      >
         {numbers.map((num, index) => (
           <div
             key={`${num}-${index}`}
             className={cn(
               'flex items-center justify-center',
-              'min-w-40 h-40 px-6',
+              size.container,
               'bg-primary text-primary-foreground',
-              'rounded-2xl shadow-lg',
-              'text-7xl font-bold tabular-nums'
+              'shadow-lg',
+              size.text,
+              'font-bold tabular-nums'
             )}
             style={{
-              animationDelay: `${index * 100}ms`,
+              animationDelay: `${index * 50}ms`,
             }}
           >
             {num}

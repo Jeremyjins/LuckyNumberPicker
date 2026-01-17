@@ -78,10 +78,9 @@ function applyThemeToDOM(resolvedTheme: 'light' | 'dark'): void {
  * ```
  */
 export function useTheme(): UseThemeReturn {
-  const [theme, setThemeState] = useState<Theme>(() => getStoredTheme());
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() =>
-    resolveTheme(getStoredTheme())
-  );
+  // SSR-safe 기본값으로 초기화 (hydration mismatch 방지)
+  const [theme, setThemeState] = useState<Theme>('system');
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   // 테마 변경 시 localStorage 저장 및 DOM 업데이트
   const setTheme = useCallback((newTheme: Theme) => {
@@ -102,9 +101,13 @@ export function useTheme(): UseThemeReturn {
     setTheme(newTheme);
   }, [resolvedTheme, setTheme]);
 
-  // 초기 마운트 시 DOM에 테마 적용
+  // 초기 마운트 시 브라우저 상태와 동기화
   useEffect(() => {
-    applyThemeToDOM(resolvedTheme);
+    const storedTheme = getStoredTheme();
+    const resolved = resolveTheme(storedTheme);
+    setThemeState(storedTheme);
+    setResolvedTheme(resolved);
+    applyThemeToDOM(resolved);
   }, []);
 
   // system 테마일 때 시스템 설정 변경 감지

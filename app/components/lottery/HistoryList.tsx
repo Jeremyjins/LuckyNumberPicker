@@ -34,8 +34,7 @@ export function HistoryList({
       <div
         className={cn(
           'flex flex-wrap items-center justify-center gap-2',
-          'max-h-20 overflow-y-auto',
-          'px-4 py-1'
+          'px-4 py-2'
         )}
       >
         {history.map((num, index) => (
