@@ -1,12 +1,12 @@
-import { X } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { cn } from '~/lib/utils';
 
 interface HistoryItemProps {
   /** 번호 */
   number: number;
-  /** 삭제(복원) 버튼 표시 여부 */
+  /** 복원 버튼 표시 여부 */
   showRemoveButton: boolean;
-  /** 삭제(복원) 클릭 핸들러 */
+  /** 복원 클릭 핸들러 */
   onRemove?: () => void;
   /** 추가 클래스 */
   className?: string;
@@ -38,15 +38,17 @@ export function HistoryItem({
         <button
           type="button"
           onClick={onRemove}
+          // WCAG 2.1: minimum 44×44px touch target
           className={cn(
-            'ml-1 p-0.5 rounded-full',
-            'hover:bg-destructive/20 hover:text-destructive',
+            'ml-0.5 flex items-center justify-center',
+            'min-w-[44px] min-h-[44px] -my-3 -mr-3 rounded-full px-2',
+            'hover:bg-primary/10 hover:text-primary',
             'transition-colors duration-150',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
           )}
           aria-label={`${number} 번호 복원`}
         >
-          <X className="w-3 h-3" />
+          <RotateCcw className="w-3 h-3" />
         </button>
       )}
     </div>

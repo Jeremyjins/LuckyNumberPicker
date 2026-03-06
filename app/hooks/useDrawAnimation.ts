@@ -82,10 +82,24 @@ export function useDrawAnimation(
     }
 
     finalNumbersRef.current = finalNumbers;
+
+    // Check user's reduced motion preference
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const effectiveDuration = prefersReducedMotion ? 0 : duration;
+
+    // reduced motion: 애니메이션 없이 즉시 결과 표시
+    if (effectiveDuration === 0) {
+      setCurrentDisplay(finalNumbers[0] ?? null);
+      optionsRef.current.onComplete?.(finalNumbers);
+      return;
+    }
+
     setIsAnimating(true);
 
     // 애니메이션 스케줄 생성
-    const schedule = generateAnimationSchedule(duration);
+    const schedule = generateAnimationSchedule(effectiveDuration);
 
     // 애니메이션 실행
     const totalTicks = schedule.timestamps.length;

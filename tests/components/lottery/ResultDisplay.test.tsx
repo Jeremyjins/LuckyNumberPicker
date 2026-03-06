@@ -41,13 +41,13 @@ describe('ResultDisplay', () => {
       expect(container.querySelector('.custom-class')).toBeInTheDocument();
     });
 
-    it('applies animation delay based on index', () => {
+    it('applies animation delay based on index (80ms step)', () => {
       render(<ResultDisplay numbers={[7, 13, 42]} isVisible={true} />);
       const numberElements = screen.getAllByText(/^\d+$/);
 
       expect(numberElements[0].closest('div[style]')).toHaveStyle({ animationDelay: '0ms' });
-      expect(numberElements[1].closest('div[style]')).toHaveStyle({ animationDelay: '100ms' });
-      expect(numberElements[2].closest('div[style]')).toHaveStyle({ animationDelay: '200ms' });
+      expect(numberElements[1].closest('div[style]')).toHaveStyle({ animationDelay: '80ms' });
+      expect(numberElements[2].closest('div[style]')).toHaveStyle({ animationDelay: '160ms' });
     });
   });
 });

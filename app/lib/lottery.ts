@@ -6,6 +6,16 @@
 export const MAX_RANGE = 10000;
 
 /**
+ * 암호학적으로 안전한 랜덤 [0, 1) 값 반환
+ * Math.random() 대신 crypto.getRandomValues() 사용으로 사용자 신뢰 향상
+ */
+function secureRandom(): number {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] / (0xffffffff + 1);
+}
+
+/**
  * 사용 가능한 번호 목록 반환
  */
 export function getAvailableNumbers(
@@ -13,9 +23,10 @@ export function getAvailableNumbers(
   end: number,
   excluded: number[] = []
 ): number[] {
+  const excludedSet = new Set(excluded);
   const available: number[] = [];
   for (let i = start; i <= end; i++) {
-    if (!excluded.includes(i)) {
+    if (!excludedSet.has(i)) {
       available.push(i);
     }
   }
@@ -33,7 +44,7 @@ export function getRandomNumber(
 ): number | null {
   const available = getAvailableNumbers(start, end, excluded);
   if (available.length === 0) return null;
-  return available[Math.floor(Math.random() * available.length)];
+  return available[Math.floor(secureRandom() * available.length)];
 }
 
 /**

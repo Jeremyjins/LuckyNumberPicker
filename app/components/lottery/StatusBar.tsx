@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '~/lib/utils';
 
 interface StatusBarProps {
@@ -12,9 +13,9 @@ interface StatusBarProps {
 }
 
 /**
- * 상태 표시 바
+ * 상태 표시 바 - 남은 번호 수 + 진행률
  */
-export function StatusBar({
+export const StatusBar = memo(function StatusBar({
   remainingCount,
   totalCount,
   allowDuplicates,
@@ -23,15 +24,21 @@ export function StatusBar({
   const isLow = !allowDuplicates && remainingCount <= 3 && remainingCount > 0;
   const isEmpty = !allowDuplicates && remainingCount === 0;
 
+  const usedCount = allowDuplicates ? 0 : totalCount - remainingCount;
+  const progressPct = allowDuplicates || totalCount === 0 ? 0 : (usedCount / totalCount) * 100;
+
   return (
     <div
+      role="status"
+      aria-live="polite"
+      aria-label="남은 번호 현황"
       className={cn(
-        'flex items-center justify-center py-3 px-4',
+        'flex flex-col gap-2 py-3 px-4',
         'bg-muted/50 rounded-lg',
         className
       )}
     >
-      <div className="flex items-center gap-2 text-md">
+      <div className="flex items-center justify-center gap-2 text-md">
         <span className="text-muted-foreground">남은 번호:</span>
         <span
           className={cn(
@@ -51,6 +58,24 @@ export function StatusBar({
           )}
         </span>
       </div>
+
+      {/* 진행률 바 (중복 허용이 아닐 때만 표시) */}
+      {!allowDuplicates && totalCount > 0 && (
+        <div
+          className="w-full h-1 bg-border rounded-full overflow-hidden"
+          aria-hidden="true"
+        >
+          <div
+            className={cn(
+              'h-full rounded-full transition-all duration-500',
+              isEmpty && 'bg-destructive',
+              isLow && 'bg-orange-500 dark:bg-orange-400',
+              !isEmpty && !isLow && 'bg-primary'
+            )}
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
-}
+});

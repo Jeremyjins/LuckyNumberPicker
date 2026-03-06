@@ -59,6 +59,16 @@ describe('useLotteryMachine', () => {
       act(() => result.current.closeSettings());
       expect(result.current.phase).toBe('initial');
     });
+
+    it('reverts settings changes when closed without confirming', () => {
+      const { result } = renderHook(() => useLotteryMachine());
+      const originalEnd = result.current.settings.endNumber;
+      act(() => result.current.openSettings());
+      act(() => result.current.updateSettings({ endNumber: 999 }));
+      expect(result.current.settings.endNumber).toBe(999);
+      act(() => result.current.closeSettings());
+      expect(result.current.settings.endNumber).toBe(originalEnd);
+    });
   });
 
   describe('updateSettings', () => {
@@ -171,6 +181,31 @@ describe('useLotteryMachine', () => {
       act(() => result.current.startDraw());
       act(() => result.current.finishDraw([7]));
       expect(result.current.history).toContain(7);
+    });
+
+    it('adds to drawRounds as a new round', () => {
+      const { result } = renderHook(() => useLotteryMachine());
+      act(() => result.current.openSettings());
+      act(() => result.current.confirmSettings());
+      act(() => result.current.startDraw());
+      act(() => result.current.finishDraw([3, 7]));
+      expect(result.current.drawRounds).toHaveLength(1);
+      expect(result.current.drawRounds[0]).toEqual([3, 7]);
+    });
+
+    it('accumulates drawRounds across multiple draws', () => {
+      const { result } = renderHook(() => useLotteryMachine());
+      act(() => result.current.openSettings());
+      act(() => result.current.updateSettings({ startNumber: 1, endNumber: 20, drawCount: 1 }));
+      act(() => result.current.confirmSettings());
+      act(() => result.current.startDraw());
+      act(() => result.current.finishDraw([5]));
+      act(() => result.current.drawAgain());
+      act(() => result.current.startDraw());
+      act(() => result.current.finishDraw([10]));
+      expect(result.current.drawRounds).toHaveLength(2);
+      expect(result.current.drawRounds[0]).toEqual([5]);
+      expect(result.current.drawRounds[1]).toEqual([10]);
     });
 
     it('sets currentResult', () => {

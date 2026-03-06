@@ -5,6 +5,8 @@ import { afterEach, vi } from 'vitest';
 // Cleanup after each test
 afterEach(() => {
   cleanup();
+  // Clear localStorage between tests to prevent cross-test contamination
+  localStorage.clear();
 });
 
 // Mock window.matchMedia

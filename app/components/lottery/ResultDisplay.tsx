@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '~/lib/utils';
 
 interface ResultDisplayProps {
@@ -11,9 +12,6 @@ interface ResultDisplayProps {
 
 /**
  * 숫자 개수에 따른 크기 결정
- * - 1~3개: 큰 크기 (기본)
- * - 4~9개: 중간 크기
- * - 10개 이상: 작은 크기
  */
 function getResultSize(count: number): {
   container: string;
@@ -34,7 +32,6 @@ function getResultSize(count: number): {
       gap: 'gap-3',
     };
   }
-  // 10개 이상
   return {
     container: 'min-w-14 h-14 px-2 rounded-lg sm:min-w-16 sm:h-16 sm:px-3',
     text: 'text-xl sm:text-2xl',
@@ -42,10 +39,19 @@ function getResultSize(count: number): {
   };
 }
 
+/** 회차 위치 기반 로또볼 색상 */
+const BALL_BG_CLASSES = [
+  'bg-primary text-primary-foreground',    // 오렌지
+  'bg-blue-500 text-white',                // 파랑
+  'bg-emerald-500 text-white',             // 초록
+  'bg-violet-600 text-white',              // 보라
+  'bg-rose-500 text-white',                // 빨강
+];
+
 /**
  * 추첨 결과 표시 컴포넌트
  */
-export function ResultDisplay({
+export const ResultDisplay = memo(function ResultDisplay({
   numbers,
   isVisible,
   className,
@@ -78,13 +84,14 @@ export function ResultDisplay({
             className={cn(
               'flex items-center justify-center',
               size.container,
-              'bg-primary text-primary-foreground',
+              BALL_BG_CLASSES[index % BALL_BG_CLASSES.length],
               'shadow-lg',
               size.text,
-              'font-bold tabular-nums'
+              'font-bold tabular-nums',
+              'animate-result-pop'
             )}
             style={{
-              animationDelay: `${index * 50}ms`,
+              animationDelay: `${index * 80}ms`,
             }}
           >
             {num}
@@ -100,4 +107,4 @@ export function ResultDisplay({
       </p>
     </div>
   );
-}
+});

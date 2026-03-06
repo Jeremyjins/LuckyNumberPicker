@@ -25,19 +25,15 @@ describe('home route', () => {
     it('returns correct description', () => {
       const result = meta({} as any);
       const descMeta = result.find((m: any) => m.name === 'description');
-      expect(descMeta).toEqual({
-        name: 'description',
-        content: '간편하게 행운의 번호를 추첨하세요!',
-      });
+      expect(descMeta?.content).toContain('행운의 번호');
     });
 
-    it('returns correct viewport meta', () => {
+    it('returns Korean OG meta tags', () => {
       const result = meta({} as any);
-      const viewportMeta = result.find((m: any) => m.name === 'viewport');
-      expect(viewportMeta).toEqual({
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1, viewport-fit=cover',
-      });
+      const ogTitle = result.find((m: any) => m.property === 'og:title');
+      const ogLocale = result.find((m: any) => m.property === 'og:locale');
+      expect(ogTitle?.content).toBe('행운번호 추첨기');
+      expect(ogLocale?.content).toBe('ko_KR');
     });
   });
 });

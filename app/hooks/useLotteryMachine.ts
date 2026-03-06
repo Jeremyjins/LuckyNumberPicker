@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo } from 'react';
+import { useReducer, useCallback, useMemo, useEffect } from 'react';
 import type {
   LotteryState,
   LotteryAction,
@@ -7,6 +7,47 @@ import type {
 } from '~/types/lottery';
 import { INITIAL_STATE, DEFAULT_SETTINGS } from '~/types/lottery';
 import { getRemainingCount, canDraw, getTotalRange, validateSettings } from '~/lib/lottery';
+
+/**
+ * localStorage에서 저장된 설정 로드
+ */
+function loadSavedSettings(): Partial<Settings> | null {
+  try {
+    const saved = localStorage.getItem('lottery-settings');
+    if (!saved) return null;
+    const parsed = JSON.parse(saved) as Partial<Settings>;
+    if (
+      typeof parsed.startNumber === 'number' &&
+      typeof parsed.endNumber === 'number' &&
+      typeof parsed.drawCount === 'number' &&
+      parsed.startNumber >= 1 &&
+      parsed.endNumber >= parsed.startNumber
+    ) {
+      return parsed;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 초기 상태 생성 (localStorage 복원 포함)
+ */
+function getInitialState(): LotteryState {
+  try {
+    const savedSettings = loadSavedSettings();
+    if (savedSettings) {
+      return {
+        ...INITIAL_STATE,
+        settings: { ...DEFAULT_SETTINGS, ...savedSettings },
+      };
+    }
+  } catch {
+    // localStorage 접근 불가 (SSR 등)
+  }
+  return INITIAL_STATE;
+}
 
 /**
  * 상태 리듀서
@@ -18,6 +59,7 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
         ...state,
         settingsOpen: true,
         phase: 'settings',
+        pendingSettings: state.settings,
       };
 
     case 'CLOSE_SETTINGS':
@@ -25,6 +67,16 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
         ...state,
         settingsOpen: false,
         phase: state.history.length > 0 ? 'result' : 'initial',
+        // 설정 취소 시 다이얼로그 열기 전 상태로 복원
+        settings: state.pendingSettings ?? state.settings,
+        pendingSettings: null,
+      };
+
+    case 'REVERT_SETTINGS':
+      return {
+        ...state,
+        settings: state.pendingSettings ?? state.settings,
+        pendingSettings: null,
       };
 
     case 'UPDATE_SETTINGS':
@@ -46,8 +98,10 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
         ...state,
         settingsOpen: false,
         phase: 'ready',
+        pendingSettings: null,
         // 설정 확정 시 히스토리 초기화
         history: [],
+        drawRounds: [],
         excludedNumbers: [],
         currentResult: [],
       };
@@ -80,16 +134,59 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
         displayNumber: null,
         currentResult: action.payload,
         history: newHistory,
+        drawRounds: [...state.drawRounds, action.payload],
         excludedNumbers: newExcluded,
       };
     }
 
-    case 'RESTORE_NUMBER':
+    case 'RESTORE_NUMBER': {
+      const excludedIdx = state.excludedNumbers.indexOf(action.payload);
+      const newExcluded =
+        excludedIdx === -1
+          ? state.excludedNumbers
+          : [
+              ...state.excludedNumbers.slice(0, excludedIdx),
+              ...state.excludedNumbers.slice(excludedIdx + 1),
+            ];
+      const historyIdx = state.history.indexOf(action.payload);
+      const newHistory =
+        historyIdx === -1
+          ? state.history
+          : [
+              ...state.history.slice(0, historyIdx),
+              ...state.history.slice(historyIdx + 1),
+            ];
+
+      // drawRounds에서도 제거: 번호가 포함된 가장 최근 회차에서 첫 번째 occurrence 제거
+      let newDrawRounds = state.drawRounds;
+      const roundIdx = [...state.drawRounds]
+        .reverse()
+        .findIndex((r) => r.includes(action.payload));
+      if (roundIdx !== -1) {
+        const actualIdx = state.drawRounds.length - 1 - roundIdx;
+        const round = state.drawRounds[actualIdx];
+        const numIdx = round.indexOf(action.payload);
+        const newRound = [...round.slice(0, numIdx), ...round.slice(numIdx + 1)];
+        newDrawRounds =
+          newRound.length === 0
+            ? [
+                ...state.drawRounds.slice(0, actualIdx),
+                ...state.drawRounds.slice(actualIdx + 1),
+              ]
+            : [
+                ...state.drawRounds.slice(0, actualIdx),
+                newRound,
+                ...state.drawRounds.slice(actualIdx + 1),
+              ];
+      }
+
       return {
         ...state,
-        excludedNumbers: state.excludedNumbers.filter((n) => n !== action.payload),
-        history: state.history.filter((n) => n !== action.payload),
+        excludedNumbers: newExcluded,
+        history: newHistory,
+        drawRounds: newDrawRounds,
       };
+    }
 
     case 'DRAW_AGAIN':
       return {
@@ -103,6 +200,8 @@ function lotteryReducer(state: LotteryState, action: LotteryAction): LotteryStat
       return {
         ...INITIAL_STATE,
         settings: DEFAULT_SETTINGS,
+        pendingSettings: null,
+        drawRounds: [],
       };
 
     default:
@@ -120,6 +219,7 @@ export interface UseLotteryMachineReturn {
   settings: Settings;
   settingsOpen: boolean;
   history: number[];
+  drawRounds: number[][];
   excludedNumbers: number[];
   currentResult: number[];
   displayNumber: number | null;
@@ -147,7 +247,7 @@ export interface UseLotteryMachineReturn {
  * 행운번호 추첨기 상태 머신 훅
  */
 export function useLotteryMachine(): UseLotteryMachineReturn {
-  const [state, dispatch] = useReducer(lotteryReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(lotteryReducer, undefined, getInitialState);
 
   // Computed values
   const totalRange = useMemo(
@@ -189,6 +289,15 @@ export function useLotteryMachine(): UseLotteryMachineReturn {
     ]
   );
 
+  // 설정 변경 시 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem('lottery-settings', JSON.stringify(state.settings));
+    } catch {
+      // localStorage 접근 불가 (프라이빗 모드, 용량 초과 등)
+    }
+  }, [state.settings]);
+
   // Actions
   const openSettings = useCallback(() => dispatch({ type: 'OPEN_SETTINGS' }), []);
   const closeSettings = useCallback(() => dispatch({ type: 'CLOSE_SETTINGS' }), []);
@@ -220,6 +329,7 @@ export function useLotteryMachine(): UseLotteryMachineReturn {
     settings: state.settings,
     settingsOpen: state.settingsOpen,
     history: state.history,
+    drawRounds: state.drawRounds,
     excludedNumbers: state.excludedNumbers,
     currentResult: state.currentResult,
     displayNumber: state.displayNumber,

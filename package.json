@@ -15,7 +15,7 @@
 		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b"
 	},
 	"dependencies": {
-		"@hugeicons/react": "^1.1.4",
+		"canvas-confetti": "^1.9.3",
 		"@radix-ui/react-dialog": "^1.1.15",
 		"@radix-ui/react-separator": "^1.1.8",
 		"@radix-ui/react-slot": "^1.2.4",
@@ -30,6 +30,7 @@
 		"tailwind-merge": "^3.4.0"
 	},
 	"devDependencies": {
+		"@types/canvas-confetti": "^1.6.4",
 		"@cloudflare/vite-plugin": "^1.13.5",
 		"@react-router/dev": "^7.10.0",
 		"@tailwindcss/vite": "^4.1.13",

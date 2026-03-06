@@ -12,6 +12,16 @@ export const easings = {
   linear: (t: number): number => t,
 };
 
+/** 애니메이션 설정 상수 */
+export const ANIMATION_CONFIG = {
+  /** 총 애니메이션 시간 (ms) */
+  duration: 2000,
+  /** 최소 틱 간격 (ms) */
+  minInterval: 50,
+  /** 최대 틱 간격 (ms) */
+  maxInterval: 400,
+} as const;
+
 /** 애니메이션 스케줄 */
 export interface AnimationSchedule {
   /** 각 틱의 타임스탬프 (ms) */
@@ -25,12 +35,12 @@ export interface AnimationSchedule {
  * 처음에는 빠르게, 나중에는 느리게 숫자가 변경되도록 타이밍 배열 생성
  */
 export function generateAnimationSchedule(
-  duration: number = 2000,
+  duration: number = ANIMATION_CONFIG.duration,
   easing: (t: number) => number = easings.easeOutQuart
 ): AnimationSchedule {
   const timestamps: number[] = [];
-  const minInterval = 50;  // 최소 간격 (가장 빠를 때)
-  const maxInterval = 400; // 최대 간격 (가장 느릴 때)
+  const minInterval = ANIMATION_CONFIG.minInterval;
+  const maxInterval = ANIMATION_CONFIG.maxInterval;
   let elapsed = 0;
 
   while (elapsed < duration) {
@@ -96,13 +106,3 @@ export function runAnimation(
     }
   };
 }
-
-/** 애니메이션 설정 상수 */
-export const ANIMATION_CONFIG = {
-  /** 총 애니메이션 시간 (ms) */
-  duration: 2000,
-  /** 최소 틱 간격 (ms) */
-  minInterval: 50,
-  /** 최대 틱 간격 (ms) */
-  maxInterval: 400,
-} as const;

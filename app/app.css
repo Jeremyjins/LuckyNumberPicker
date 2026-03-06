@@ -4,13 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif,
+  /* Korean system font fallbacks: Apple SD Gothic Neo (iOS/macOS), Malgun Gothic (Windows) */
+  --font-sans: "Noto Sans", "Apple SD Gothic Neo", "Malgun Gothic", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 html,
 body {
   @apply bg-white dark:bg-gray-950;
+  /* 모바일 pull-to-refresh 방지 */
+  overscroll-behavior: none;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
@@ -223,33 +226,13 @@ body {
   }
 }
 
-/* Floating effect for buttons */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-/* Subtle scale breathing */
+/* Subtle scale breathing - ready 상태 버튼 강조용 */
 @keyframes breathe {
   0%, 100% {
     transform: scale(1);
   }
   50% {
     transform: scale(1.02);
-  }
-}
-
-/* Shimmer effect for buttons */
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
   }
 }
 
@@ -289,10 +272,6 @@ body {
 
 .animate-fade-in {
   animation: fade-in 400ms ease-out forwards;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
 }
 
 .animate-breathe {
@@ -342,4 +321,16 @@ body {
 /* Smooth shadow transition for buttons */
 .shadow-smooth {
   transition: box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

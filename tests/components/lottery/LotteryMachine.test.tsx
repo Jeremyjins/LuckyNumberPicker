@@ -137,7 +137,7 @@ describe('LotteryMachine', () => {
   });
 
   describe('reset functionality', () => {
-    it('returns to initial state when reset button is clicked', async () => {
+    it('returns to initial state when reset button is confirmed', async () => {
       render(<LotteryMachine />);
 
       // Go to ready state
@@ -149,8 +149,15 @@ describe('LotteryMachine', () => {
         expect(screen.getByText('다시 설정하기')).toBeInTheDocument();
       });
 
-      // Reset
+      // Click reset - shows confirm UI
       fireEvent.click(screen.getByText('다시 설정하기'));
+
+      await waitFor(() => {
+        expect(screen.getByText('정말 초기화하시겠습니까?')).toBeInTheDocument();
+      });
+
+      // Confirm reset
+      fireEvent.click(screen.getByText('초기화'));
 
       await waitFor(() => {
         expect(screen.getByText('세팅하기')).toBeInTheDocument();

@@ -14,6 +14,15 @@ describe('StatusBar', () => {
       render(<StatusBar remainingCount={10} totalCount={45} allowDuplicates={false} />);
       expect(screen.getByText('/45개')).toBeInTheDocument();
     });
+
+    it('has role="status" and aria-live="polite"', () => {
+      const { container } = render(
+        <StatusBar remainingCount={10} totalCount={45} allowDuplicates={false} />
+      );
+      const statusEl = container.querySelector('[role="status"]');
+      expect(statusEl).toBeInTheDocument();
+      expect(statusEl).toHaveAttribute('aria-live', 'polite');
+    });
   });
 
   describe('duplicates allowed', () => {
@@ -26,6 +35,13 @@ describe('StatusBar', () => {
       render(<StatusBar remainingCount={10} totalCount={45} allowDuplicates={true} />);
       expect(screen.queryByText('10')).not.toBeInTheDocument();
       expect(screen.queryByText('/45개')).not.toBeInTheDocument();
+    });
+
+    it('does not show progress bar when duplicates allowed', () => {
+      const { container } = render(
+        <StatusBar remainingCount={10} totalCount={45} allowDuplicates={true} />
+      );
+      expect(container.querySelector('[aria-hidden="true"]')).not.toBeInTheDocument();
     });
   });
 
@@ -54,6 +70,23 @@ describe('StatusBar', () => {
       render(<StatusBar remainingCount={0} totalCount={45} allowDuplicates={false} />);
       const countElement = screen.getByText('0');
       expect(countElement).toHaveClass('text-destructive');
+    });
+  });
+
+  describe('progress bar', () => {
+    it('shows progress bar when not duplicates allowed', () => {
+      const { container } = render(
+        <StatusBar remainingCount={35} totalCount={45} allowDuplicates={false} />
+      );
+      expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+    });
+
+    it('progress bar fills proportionally to used count', () => {
+      const { container } = render(
+        <StatusBar remainingCount={0} totalCount={10} allowDuplicates={false} />
+      );
+      const fill = container.querySelector('[style]') as HTMLElement;
+      expect(fill?.style.width).toBe('100%');
     });
   });
 

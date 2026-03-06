@@ -11,6 +11,21 @@ import { Separator } from '~/components/ui/separator';
 import { NumberInput } from './NumberInput';
 import type { Settings } from '~/types/lottery';
 import { validateSettings } from '~/lib/lottery';
+import { cn } from '~/lib/utils';
+
+const PRESETS = [
+  { label: '로또 6/45', startNumber: 1, endNumber: 45, drawCount: 6 },
+  { label: '빙고 1/75', startNumber: 1, endNumber: 75, drawCount: 5 },
+  { label: '주사위', startNumber: 1, endNumber: 6, drawCount: 1 },
+] as const;
+
+function isPresetActive(settings: Settings, preset: (typeof PRESETS)[number]): boolean {
+  return (
+    settings.startNumber === preset.startNumber &&
+    settings.endNumber === preset.endNumber &&
+    settings.drawCount === preset.drawCount
+  );
+}
 
 interface SettingsDialogProps {
   /** 다이얼로그 열림 여부 */
@@ -36,6 +51,14 @@ export function SettingsDialog({
   onConfirm,
 }: SettingsDialogProps) {
   const validation = validateSettings(settings);
+
+  const handlePresetClick = (preset: (typeof PRESETS)[number]) => {
+    onSettingsChange({
+      startNumber: preset.startNumber,
+      endNumber: preset.endNumber,
+      drawCount: preset.drawCount,
+    });
+  };
 
   const handleConfirm = () => {
     if (validation.valid) {
@@ -77,6 +100,31 @@ export function SettingsDialog({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          {/* 빠른 설정 프리셋 */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground tracking-wide uppercase">빠른 설정</p>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map((preset) => {
+                const active = isPresetActive(settings, preset);
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => handlePresetClick(preset)}
+                    className={cn(
+                      'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
+                      active
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
+                    )}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* 시작 번호 */}
           <NumberInput
             label="시작 번호"

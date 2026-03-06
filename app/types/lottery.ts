@@ -25,10 +25,14 @@ export interface LotteryState {
   phase: Phase;
   /** 설정 */
   settings: Settings;
+  /** 설정 다이얼로그 열기 전 스냅샷 (취소 시 복원용) */
+  pendingSettings: Settings | null;
   /** 설정 다이얼로그 열림 여부 */
   settingsOpen: boolean;
-  /** 추첨 히스토리 */
+  /** 추첨 히스토리 (flat, 제외 번호 추적용) */
   history: number[];
+  /** 회차별 추첨 결과 (그룹 표시용) */
+  drawRounds: number[][];
   /** 제외된 번호들 (중복 제외 모드) */
   excludedNumbers: number[];
   /** 현재 추첨 결과 */
@@ -43,6 +47,7 @@ export interface LotteryState {
 export type LotteryAction =
   | { type: 'OPEN_SETTINGS' }
   | { type: 'CLOSE_SETTINGS' }
+  | { type: 'REVERT_SETTINGS' }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<Settings> }
   | { type: 'CONFIRM_SETTINGS' }
   | { type: 'START_DRAW' }
@@ -65,8 +70,10 @@ export const DEFAULT_SETTINGS: Settings = {
 export const INITIAL_STATE: LotteryState = {
   phase: 'initial',
   settings: DEFAULT_SETTINGS,
+  pendingSettings: null,
   settingsOpen: false,
   history: [],
+  drawRounds: [],
   excludedNumbers: [],
   currentResult: [],
   displayNumber: null,
