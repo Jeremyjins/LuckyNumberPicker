@@ -6,25 +6,34 @@ declare module "react-router" {
       env: Env;
       ctx: ExecutionContext;
     };
+    nonce: string;
   }
 }
 
-const SECURITY_HEADERS: Record<string, string> = {
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  // CSP: inline styles allowed for Radix UI positioning; fonts from Google
-  'Content-Security-Policy': [
+function generateNonce(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function buildCSP(nonce: string): string {
+  return [
     "default-src 'self'",
-    "script-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data:",
     "connect-src 'self'",
     "worker-src 'self'",
-  ].join('; '),
+  ].join('; ');
+}
+
+const STATIC_SECURITY_HEADERS: Record<string, string> = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
 };
 
 const requestHandler = createRequestHandler(
@@ -34,15 +43,18 @@ const requestHandler = createRequestHandler(
 
 export default {
   async fetch(request, env, ctx) {
+    const nonce = generateNonce();
     const response = await requestHandler(request, {
       cloudflare: { env, ctx },
+      nonce,
     });
     const newResponse = new Response(response.body, response);
 
     // Security headers on all responses
-    Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    Object.entries(STATIC_SECURITY_HEADERS).forEach(([key, value]) => {
       newResponse.headers.set(key, value);
     });
+    newResponse.headers.set('Content-Security-Policy', buildCSP(nonce));
 
     // Cache-Control: HTML은 항상 재검증, 정적 자산은 1년 캐시
     const url = new URL(request.url);

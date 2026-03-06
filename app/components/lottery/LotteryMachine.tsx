@@ -350,7 +350,7 @@ export function LotteryMachine() {
         )}
 
         {/* 브랜드 로고 */}
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center gap-1 pb-2">
           <p className="text-muted-foreground tracking-tighter font-semibold text-[10px]">SPONSORED BY</p>
           <img
             src="/images/eb_icon.png"

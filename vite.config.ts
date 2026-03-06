@@ -11,4 +11,9 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  build: {
+    modulePreload: {
+      polyfill: false,
+    },
+  },
 });
