@@ -39,6 +39,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+
+  // Cache API only supports http/https — skip chrome-extension://, data:, etc.
+  if (!request.url.startsWith('http')) return;
+
   const url = new URL(request.url);
 
   // Google Fonts: stale-while-revalidate (폰트는 자주 바뀌지 않음)

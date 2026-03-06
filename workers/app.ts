@@ -24,7 +24,7 @@ function buildCSP(nonce: string): string {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data:",
     "connect-src 'self'",
-    "worker-src 'self'",
+    "worker-src 'self' blob:",
   ].join('; ');
 }
 
