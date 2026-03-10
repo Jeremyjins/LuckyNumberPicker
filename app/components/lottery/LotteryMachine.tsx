@@ -172,9 +172,8 @@ export function LotteryMachine() {
   return (
     <div
       className={cn(
-        'flex flex-col bg-background relative',
-        isInitial && 'h-dvh overflow-hidden',
-        !isInitial && 'min-h-dvh'
+        'flex flex-col bg-background relative min-h-dvh',
+        isInitial && 'h-dvh overflow-hidden'
       )}
     >
       {/* 테마 선택 버튼 - 우상단 고정 */}
