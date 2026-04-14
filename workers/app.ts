@@ -56,16 +56,28 @@ export default {
     });
     newResponse.headers.set('Content-Security-Policy', buildCSP(nonce));
 
-    // Cache-Control: HTML은 항상 재검증, 정적 자산은 1년 캐시
+    // Cache-Control
     const url = new URL(request.url);
     const acceptsHtml = request.headers.get('accept')?.includes('text/html');
-    if (acceptsHtml || url.pathname === '/') {
+
+    if (url.pathname === '/sw.js') {
+      newResponse.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+    } else if (url.pathname === '/manifest.json') {
+      newResponse.headers.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+    } else if (acceptsHtml || url.pathname === '/') {
       newResponse.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     } else if (
       url.pathname.startsWith('/assets/') ||
       url.pathname.startsWith('/_assets/')
     ) {
       newResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (
+      url.pathname.startsWith('/images/') ||
+      url.pathname.startsWith('/pwa-') ||
+      url.pathname.startsWith('/maskable-') ||
+      url.pathname.startsWith('/apple-touch-icon')
+    ) {
+      newResponse.headers.set('Cache-Control', 'public, max-age=86400, must-revalidate');
     }
 
     return newResponse;
