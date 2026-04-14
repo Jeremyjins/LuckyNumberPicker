@@ -110,7 +110,14 @@ export const ResultDisplay = memo(function ResultDisplay({
       </div>
 
       {/* 추첨 완료 메시지 */}
-      <p className="text-base font-medium text-muted-foreground">
+      <p
+        className="text-base font-medium text-muted-foreground animate-fade-in"
+        style={{
+          animationDelay: `${numbers.length * 80 + 400}ms`,
+          opacity: 0,
+          animationFillMode: 'forwards',
+        }}
+      >
         {numbers.length === 1
           ? '행운의 번호가 선택되었습니다!'
           : `${numbers.length}개의 번호가 선택되었습니다!`}
