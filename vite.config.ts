@@ -12,7 +12,19 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   optimizeDeps: {
-    include: ['tailwind-merge'],
+    include: [
+      'tailwind-merge',
+      'clsx',
+      'react',
+      'react-dom',
+      'react-router',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-slot',
+      '@radix-ui/react-switch',
+      'class-variance-authority',
+      'lucide-react',
+    ],
   },
   build: {
     modulePreload: {

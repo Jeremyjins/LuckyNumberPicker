@@ -26,7 +26,7 @@ export function HistoryItem({
       className={cn(
         'relative inline-flex items-center gap-1',
         'px-3 py-1.5 rounded-full',
-        'bg-secondary text-secondary-foreground',
+        'bg-secondary text-secondary-foreground border border-border/60 hover:border-primary/30 hover:bg-accent/30 transition-colors duration-200',
         'text-sm font-medium tabular-nums',
         'transition-all duration-200',
         className

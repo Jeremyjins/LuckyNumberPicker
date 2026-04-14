@@ -179,7 +179,7 @@ export function LotteryMachine() {
       {showStatusBar && (
         <header
           className={cn(
-            'pt-safe px-4 pt-4 shrink-0 z-40',
+            'pt-safe px-4 shrink-0 z-40',
             isResult ? 'sticky top-0 glass-surface' : 'bg-background'
           )}
         >

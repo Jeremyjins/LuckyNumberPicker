@@ -45,6 +45,14 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
+  // 개발 환경(localhost): Vite optimized deps는 캐싱하지 않음
+  if (
+    url.hostname === 'localhost' &&
+    url.pathname.includes('/node_modules/')
+  ) {
+    return; // 브라우저 기본 동작으로 위임
+  }
+
   // Google Fonts: stale-while-revalidate (폰트는 자주 바뀌지 않음)
   if (
     url.origin === 'https://fonts.googleapis.com' ||

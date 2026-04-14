@@ -55,10 +55,11 @@ export function usePhaseTransition(phase: Phase): PhaseTransitionResult {
 
   useEffect(() => {
     const prevPhase = prevPhaseRef.current;
-    prevPhaseRef.current = phase;
 
     // Same phase — no transition needed
     if (prevPhase === phase) return;
+
+    prevPhaseRef.current = phase;
 
     // ready -> drawing has no exit animation (button handles it internally)
     if (prevPhase === 'ready' && phase === 'drawing') {
