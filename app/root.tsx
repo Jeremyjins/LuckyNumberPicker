@@ -62,10 +62,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then((registration) => {
-        // Check for updates every hour
-        setInterval(() => registration.update(), 60 * 60 * 1000);
-      }).catch(() => {});
+      if (import.meta.env.PROD) {
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          // Check for updates every hour
+          setInterval(() => registration.update(), 60 * 60 * 1000);
+        }).catch(() => {});
+      } else {
+        // Dev: unregister any stale SW to prevent fetch interception
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((r) => r.unregister());
+        });
+      }
     }
   }, []);
 
