@@ -10,6 +10,7 @@ import { HistoryList } from './HistoryList';
 import { Button } from '~/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { cn } from '~/lib/utils';
+import { usePhaseTransition } from '~/hooks/usePhaseTransition';
 import { playTick, playSuccess } from '~/lib/sound';
 
 /** 번호 순차 공개 간격 (ms) */
@@ -40,6 +41,8 @@ export function LotteryMachine() {
     drawAgain,
     resetAll,
   } = useLotteryMachine();
+
+  const { displayPhase, transitionClass } = usePhaseTransition(phase);
 
   // 순차 공개 상태
   const [revealedCount, setRevealedCount] = useState(0);
@@ -140,11 +143,11 @@ export function LotteryMachine() {
     setShowResetConfirm(false);
   }, [resetAll]);
 
-  // Phase에 따른 렌더링
-  const isInitial = phase === 'initial';
-  const isReady = phase === 'ready';
-  const isDrawing = phase === 'drawing';
-  const isResult = phase === 'result';
+  // Phase에 따른 렌더링 (displayPhase는 전환 중 이전 상태 유지)
+  const isInitial = displayPhase === 'initial';
+  const isReady = displayPhase === 'ready';
+  const isDrawing = displayPhase === 'drawing';
+  const isResult = displayPhase === 'result';
   const showStatusBar = isReady || isDrawing || isResult;
   const showDrawButton = isReady || isDrawing;
   const showResult = isResult && revealedNumbers.length > 0;
@@ -196,75 +199,77 @@ export function LotteryMachine() {
           (isReady || isDrawing) && 'flex-1 justify-center'
         )}
       >
-        {/* 초기 상태: Hero Section + 세팅하기 버튼 */}
-        {isInitial && (
-          <div className="flex flex-col items-center gap-6">
-            <div className="text-center animate-stagger animate-fade-in-up">
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-                <span className="text-primary">행운번호</span>{' '}
-                <span className="text-foreground">추첨기</span>
-              </h1>
-              <p className="mt-4 text-base text-muted-foreground animate-stagger animate-fade-in-up delay-200">
-                나만의 행운을 만들어보세요
-              </p>
+        <div className={cn(transitionClass, 'w-full flex flex-col items-center gap-4')}>
+          {/* 초기 상태: Hero Section + 세팅하기 버튼 */}
+          {isInitial && (
+            <div className="flex flex-col items-center gap-6">
+              <div className="text-center animate-stagger animate-fade-in-up">
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+                  <span className="text-primary">행운번호</span>{' '}
+                  <span className="text-foreground">추첨기</span>
+                </h1>
+                <p className="mt-4 text-base text-muted-foreground animate-stagger animate-fade-in-up delay-200">
+                  나만의 행운을 만들어보세요
+                </p>
+              </div>
+              <div className="animate-stagger animate-fade-in-up delay-300">
+                <DrawButton
+                  variant="setup"
+                  size="lg"
+                  onClick={handleSetupClick}
+                />
+              </div>
             </div>
-            <div className="animate-stagger animate-fade-in-up delay-300">
-              <DrawButton
-                variant="setup"
-                size="lg"
-                onClick={handleSetupClick}
-              />
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* 결과 표시 - aria-live for screen readers */}
-        <div
-          aria-live="assertive"
-          role="status"
-          aria-atomic="true"
-          aria-label="추첨 결과"
-        >
-          {showResult && (
-            <ResultDisplay
-              numbers={revealedNumbers}
-              isVisible={true}
+          {/* 결과 표시 - aria-live for screen readers */}
+          <div
+            aria-live="assertive"
+            role="status"
+            aria-atomic="true"
+            aria-label="추첨 결과"
+          >
+            {showResult && (
+              <ResultDisplay
+                numbers={revealedNumbers}
+                isVisible={true}
+              />
+            )}
+          </div>
+
+          {/* 추첨 버튼 (ready/drawing 상태) */}
+          {showDrawButton && (
+            <DrawButton
+              variant="draw"
+              size="lg"
+              disabled={!canDrawNow}
+              isAnimating={isAnimating}
+              displayNumber={currentDisplay}
+              onClick={handleDraw}
             />
           )}
+
+          {/* 결과 상태: 다시 추첨하기 버튼 */}
+          {isResult && canDrawNow && allRevealed && (
+            <Button
+              ref={drawAgainButtonRef}
+              onClick={drawAgain}
+              variant="default"
+              size="lg"
+              className="mt-4 animate-bounce-in"
+            >
+              다시 추첨하기
+            </Button>
+          )}
+
+          {/* 추첨 불가 메시지 */}
+          {isResult && !canDrawNow && !settings.allowDuplicates && allRevealed && (
+            <p className="text-sm text-muted-foreground text-center mt-4 animate-fade-in">
+              모든 번호가 추첨되었습니다.<br />
+              히스토리에서 번호를 복원하거나 다시 설정하세요.
+            </p>
+          )}
         </div>
-
-        {/* 추첨 버튼 (ready/drawing 상태) */}
-        {showDrawButton && (
-          <DrawButton
-            variant="draw"
-            size="lg"
-            disabled={!canDrawNow}
-            isAnimating={isAnimating}
-            displayNumber={currentDisplay}
-            onClick={handleDraw}
-          />
-        )}
-
-        {/* 결과 상태: 다시 추첨하기 버튼 */}
-        {isResult && canDrawNow && allRevealed && (
-          <Button
-            ref={drawAgainButtonRef}
-            onClick={drawAgain}
-            variant="default"
-            size="lg"
-            className="mt-4"
-          >
-            다시 추첨하기
-          </Button>
-        )}
-
-        {/* 추첨 불가 메시지 */}
-        {isResult && !canDrawNow && !settings.allowDuplicates && allRevealed && (
-          <p className="text-sm text-muted-foreground text-center mt-4">
-            모든 번호가 추첨되었습니다.<br />
-            히스토리에서 번호를 복원하거나 다시 설정하세요.
-          </p>
-        )}
       </main>
 
       {/* 히스토리 영역 */}
