@@ -8,7 +8,7 @@ import { DrawButton } from './DrawButton';
 import { ResultDisplay } from './ResultDisplay';
 import { HistoryList } from './HistoryList';
 import { Button } from '~/components/ui/button';
-import { RotateCcw, Share2 } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import { cn } from '~/lib/utils';
 import { playTick, playSuccess } from '~/lib/sound';
 
@@ -123,24 +123,6 @@ export function LotteryMachine() {
     onComplete: handleAnimationComplete,
   });
 
-  // Web Share API 핸들러
-  const handleShare = useCallback(async () => {
-    const text = `행운번호 추첨기로 뽑은 번호: ${currentResult.join(', ')}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: '행운번호 추첨 결과', text });
-      } catch {
-        // 사용자 취소 또는 공유 실패 - 무시
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {
-        // 클립보드 접근 실패 - 무시
-      }
-    }
-  }, [currentResult]);
-
   // 추첨 시작
   const handleDraw = useCallback(() => {
     startDraw();
@@ -172,7 +154,7 @@ export function LotteryMachine() {
   return (
     <div
       className={cn(
-        'flex flex-col bg-background relative min-h-dvh',
+        'flex flex-col bg-background relative min-h-dvh texture-grain',
         isInitial && 'h-dvh overflow-hidden'
       )}
     >
@@ -194,8 +176,8 @@ export function LotteryMachine() {
       {showStatusBar && (
         <header
           className={cn(
-            'pt-safe px-4 pt-4 shrink-0 bg-background z-40',
-            isResult && 'sticky top-0'
+            'pt-safe px-4 pt-4 shrink-0 z-40',
+            isResult ? 'sticky top-0 glass-surface' : 'bg-background'
           )}
         >
           <StatusBar
@@ -218,11 +200,9 @@ export function LotteryMachine() {
         {isInitial && (
           <div className="flex flex-col items-center gap-6">
             <div className="text-center animate-stagger animate-fade-in-up">
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
-                행운번호
-              </h1>
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
-                추첨기
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+                <span className="text-primary">행운번호</span>{' '}
+                <span className="text-foreground">추첨기</span>
               </h1>
               <p className="mt-4 text-base text-muted-foreground animate-stagger animate-fade-in-up delay-200">
                 나만의 행운을 만들어보세요
@@ -263,19 +243,6 @@ export function LotteryMachine() {
             displayNumber={currentDisplay}
             onClick={handleDraw}
           />
-        )}
-
-        {/* 공유 버튼 */}
-        {isResult && allRevealed && currentResult.length > 0 && (
-          <Button
-            onClick={handleShare}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            공유하기
-          </Button>
         )}
 
         {/* 결과 상태: 다시 추첨하기 버튼 */}

@@ -62,15 +62,15 @@ export const StatusBar = memo(function StatusBar({
       {/* 진행률 바 (중복 허용이 아닐 때만 표시) */}
       {!allowDuplicates && totalCount > 0 && (
         <div
-          className="w-full h-1 bg-border rounded-full overflow-hidden"
+          className="w-full h-1.5 bg-border rounded-full overflow-hidden"
           aria-hidden="true"
         >
           <div
             className={cn(
               'h-full rounded-full transition-all duration-500',
               isEmpty && 'bg-destructive',
-              isLow && 'bg-orange-500 dark:bg-orange-400',
-              !isEmpty && !isLow && 'bg-primary'
+              isLow && 'bg-gradient-to-r from-orange-400 to-orange-500',
+              !isEmpty && !isLow && 'bg-gradient-to-r from-primary/80 to-primary'
             )}
             style={{ width: `${progressPct}%` }}
           />

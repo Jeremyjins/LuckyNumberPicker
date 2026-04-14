@@ -26,7 +26,7 @@ const sizeClasses = {
 
 const shadowClasses = {
   setup: 'shadow-lg shadow-secondary/30 hover:shadow-xl hover:shadow-secondary/40',
-  draw: 'shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40',
+  draw: 'shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 draw-btn-glow',
 };
 
 const displaySizeClasses = {
@@ -83,10 +83,11 @@ export function DrawButton({
           // Variant styles
           isSetup
             ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            : 'bg-primary text-primary-foreground hover:bg-primary/90',
+            : 'bg-primary text-primary-foreground hover:bg-primary/90 btn-glow',
 
           // Hover lift effect
           !disabled && !isAnimating && 'hover:-translate-y-1',
+          !isSetup && !isAnimating && !disabled && 'animate-breathe',
 
           // Disabled state
           disabled && 'opacity-50 cursor-not-allowed shadow-none',

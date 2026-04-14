@@ -20,20 +20,20 @@ function getResultSize(count: number): {
 } {
   if (count <= 3) {
     return {
-      container: 'min-w-32 h-32 px-4 rounded-2xl sm:min-w-40 sm:h-40 sm:px-6',
+      container: 'min-w-32 h-32 px-4 rounded-2xl sm:min-w-40 sm:h-40',
       text: 'text-5xl sm:text-7xl',
       gap: 'gap-4',
     };
   }
   if (count <= 9) {
     return {
-      container: 'min-w-20 h-20 px-3 rounded-xl sm:min-w-24 sm:h-24 sm:px-4',
+      container: 'min-w-20 h-20 px-3 rounded-xl sm:min-w-24 sm:h-24',
       text: 'text-3xl sm:text-4xl',
       gap: 'gap-3',
     };
   }
   return {
-    container: 'min-w-14 h-14 px-2 rounded-lg sm:min-w-16 sm:h-16 sm:px-3',
+    container: 'min-w-14 h-14 px-2 rounded-lg sm:min-w-16 sm:h-16',
     text: 'text-xl sm:text-2xl',
     gap: 'gap-2',
   };
@@ -46,6 +46,14 @@ const BALL_BG_CLASSES = [
   'bg-emerald-500 text-white',             // 초록
   'bg-violet-600 text-white',              // 보라
   'bg-rose-500 text-white',                // 빨강
+];
+
+const BALL_GLOW_CLASSES = [
+  'ball-glow-orange',
+  'ball-glow-blue',
+  'ball-glow-emerald',
+  'ball-glow-violet',
+  'ball-glow-rose',
 ];
 
 /**
@@ -85,6 +93,8 @@ export const ResultDisplay = memo(function ResultDisplay({
               'flex items-center justify-center',
               size.container,
               BALL_BG_CLASSES[index % BALL_BG_CLASSES.length],
+              'ball-shimmer',
+              BALL_GLOW_CLASSES[index % BALL_GLOW_CLASSES.length],
               'shadow-lg',
               size.text,
               'font-bold tabular-nums',
@@ -100,7 +110,7 @@ export const ResultDisplay = memo(function ResultDisplay({
       </div>
 
       {/* 추첨 완료 메시지 */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-base font-medium text-muted-foreground">
         {numbers.length === 1
           ? '행운의 번호가 선택되었습니다!'
           : `${numbers.length}개의 번호가 선택되었습니다!`}
