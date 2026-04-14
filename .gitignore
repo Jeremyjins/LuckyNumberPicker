@@ -25,3 +25,4 @@ worker-configuration.d.ts
 
 # Playwright MCP screenshots
 .playwright-mcp/
+.worktrees/
