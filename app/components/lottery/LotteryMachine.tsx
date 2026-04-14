@@ -8,6 +8,8 @@ import { DrawButton } from './DrawButton';
 import { ResultDisplay } from './ResultDisplay';
 import { HistoryList } from './HistoryList';
 import { Button } from '~/components/ui/button';
+import { InstallPrompt } from '~/components/pwa/InstallPrompt';
+import { OfflineIndicator } from '~/components/pwa/OfflineIndicator';
 import { RotateCcw } from 'lucide-react';
 import { cn } from '~/lib/utils';
 import { usePhaseTransition } from '~/hooks/usePhaseTransition';
@@ -336,6 +338,9 @@ export function LotteryMachine() {
           />
         </div>
       </footer>
+
+      <InstallPrompt />
+      <OfflineIndicator />
     </div>
   );
 }
