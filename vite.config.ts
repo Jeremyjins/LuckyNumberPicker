@@ -11,6 +11,9 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  optimizeDeps: {
+    include: ['tailwind-merge'],
+  },
   build: {
     modulePreload: {
       polyfill: false,
