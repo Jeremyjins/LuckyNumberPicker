@@ -38,7 +38,15 @@ export const HistoryList = memo(function HistoryList({
         {drawRounds.map((round, roundIndex) => (
           <li
             key={roundIndex}
-            className="flex items-center gap-2"
+            className={cn(
+              'flex items-center gap-2',
+              roundIndex === drawRounds.length - 1 && 'animate-slide-in-bottom'
+            )}
+            style={
+              roundIndex === drawRounds.length - 1
+                ? { animationDelay: `${Math.min(roundIndex * 50, 200)}ms` }
+                : undefined
+            }
             aria-label={`${roundIndex + 1}회차`}
           >
             <span className="text-xs text-muted-foreground min-w-[36px] shrink-0 text-right">

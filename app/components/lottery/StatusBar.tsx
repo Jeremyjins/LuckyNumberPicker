@@ -69,8 +69,8 @@ export const StatusBar = memo(function StatusBar({
             className={cn(
               'h-full rounded-full transition-all duration-500',
               isEmpty && 'bg-destructive',
-              isLow && 'bg-orange-500 dark:bg-orange-400',
-              !isEmpty && !isLow && 'bg-primary'
+              isLow && 'bg-gradient-to-r from-orange-400 to-orange-500',
+              !isEmpty && !isLow && 'bg-gradient-to-r from-primary/80 to-primary'
             )}
             style={{ width: `${progressPct}%` }}
           />

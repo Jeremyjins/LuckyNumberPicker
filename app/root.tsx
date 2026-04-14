@@ -27,12 +27,8 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap",
   },
-  // Apple Touch Icons for iOS home screen
-  { rel: "apple-touch-icon", sizes: "180x180", href: "/images/app_logo.png" },
-  { rel: "apple-touch-icon", sizes: "152x152", href: "/images/app_logo.png" },
-  { rel: "apple-touch-icon", sizes: "120x120", href: "/images/app_logo.png" },
-  { rel: "apple-touch-icon", href: "/images/app_logo.png" },
-  // Web App Manifest for PWA
+  // PWA Icons
+  { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon-180x180.png" },
   { rel: "manifest", href: "/manifest.json" },
 ];
 
@@ -44,6 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="description" content="간편하게 행운의 번호를 추첨하세요! 로또, 주사위, 빙고 등 다양한 번호 추첨기." />
         {/* PWA meta tags */}
         <meta name="theme-color" content="#000000" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -65,7 +62,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      if (import.meta.env.PROD) {
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          // Check for updates every hour
+          setInterval(() => registration.update(), 60 * 60 * 1000);
+        }).catch(() => {});
+      } else {
+        // Dev: unregister any stale SW to prevent fetch interception
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((r) => r.unregister());
+        });
+      }
     }
   }, []);
 
